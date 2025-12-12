@@ -103,6 +103,8 @@ class CountMinSketch {
   }
 
   /** @todo (student) can add their data structures that support count-min sketch operations */
+  std::vector<u_int32_t> sketchTable;
+  std::mutex sketchMutex;
 };
 
 }  // namespace bustub
