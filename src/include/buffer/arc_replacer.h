@@ -15,7 +15,7 @@
 
 #include <list>
 #include <memory>
-#include <mutex>  // NOLINT
+#include <shared_mutex>
 #include <optional>
 #include <unordered_map>
 
@@ -86,7 +86,7 @@ class ArcReplacer {
   [[maybe_unused]] size_t mru_target_size_{0};
   /* c as in original paper */
   [[maybe_unused]] size_t replacer_size_;
-  std::mutex latch_;
+  std::shared_mutex latch_;
 
   // TODO(student): You can add member variables / functions as you like.
 };

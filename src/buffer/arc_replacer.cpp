@@ -14,9 +14,11 @@
 #include "buffer/arc_replacer.h"
 #include <optional>
 #include <algorithm>
+#include <shared_mutex>
 #include "common/config.h"
 #include "common/exception.h"
 
+// TODO: Make the whole thing thread-safe
 namespace bustub {
 
 /**
@@ -47,6 +49,8 @@ ArcReplacer::ArcReplacer(size_t num_frames) : replacer_size_(num_frames) {}
  * @return frame id of the evicted frame, or std::nullopt if cannot evict
  */
 auto ArcReplacer::Evict() -> std::optional<frame_id_t> {
+    std::unique_lock writeLock(latch_);
+
     if (curr_size_ == 0) {
         return std::nullopt;
     }
@@ -215,6 +219,7 @@ void ArcReplacer::RecordAccess(frame_id_t frame_id, page_id_t page_id, [[maybe_u
      * Adjust mru_target_size as needed !!
      * Adjust curr_size_ as needed      !!
     */
+    std::unique_lock writeLock(latch_);
 
     if (alive_map_.find(frame_id) != alive_map_.end()) {
         auto frameStatus = alive_map_[frame_id];
@@ -406,6 +411,8 @@ void ArcReplacer::RecordAccess(frame_id_t frame_id, page_id_t page_id, [[maybe_u
  * @param set_evictable whether the given frame is evictable or not
  */
 void ArcReplacer::SetEvictable(frame_id_t frame_id, bool set_evictable) {
+    std::unique_lock writeLock(latch_);
+
     if (alive_map_.find(frame_id) == alive_map_.end()) {
         throw bustub::Exception("Frame not found");
     }
@@ -438,6 +445,8 @@ void ArcReplacer::SetEvictable(frame_id_t frame_id, bool set_evictable) {
  * @param frame_id id of frame to be removed
  */
 void ArcReplacer::Remove(frame_id_t frame_id) {
+    std::unique_lock writeLock(latch_);
+
     if (alive_map_.find(frame_id) == alive_map_.end()) {
         return;
     }
@@ -498,6 +507,9 @@ void ArcReplacer::Remove(frame_id_t frame_id) {
  *
  * @return size_t
  */
-auto ArcReplacer::Size() -> size_t { return this->curr_size_; }
+auto ArcReplacer::Size() -> size_t {
+    std::shared_lock readLock(latch_);
+    return this->curr_size_;
+}
 
 }  // namespace bustub
