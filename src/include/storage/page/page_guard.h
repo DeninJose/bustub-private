@@ -13,6 +13,8 @@
 #pragma once
 
 #include <memory>
+#include <mutex>
+#include <shared_mutex>
 
 #include "buffer/arc_replacer.h"
 #include "buffer/buffer_pool_manager.h"
@@ -122,6 +124,15 @@ class ReadPageGuard {
    * If you want extra (nonexistent) style points, and you want to be extra fancy, then you can look into the
    * `std::shared_lock` type and use that for the latching mechanism instead of manually calling `lock` and `unlock`.
    */
+
+  /*--------------------------- ADDITIONAL FIELDS AND METHODS -----------------------------------*/
+  /*---------------------------------------------------------------------------------------------*/
+  /*---------------------------------------------------------------------------------------------*/
+  /*---------------------------------------------------------------------------------------------*/
+  /*---------------------------------------------------------------------------------------------*/
+  std::unique_ptr<std::shared_lock<std::shared_mutex>> read_lock_;
+
+  static auto swap(ReadPageGuard& a, ReadPageGuard& b) -> void;
 };
 
 /**
@@ -229,6 +240,15 @@ class WritePageGuard {
    * If you want extra (nonexistent) style points, and you want to be extra fancy, then you can look into the
    * `std::unique_lock` type and use that for the latching mechanism instead of manually calling `lock` and `unlock`.
    */
+
+  /*--------------------------- ADDITIONAL FIELDS AND METHODS -----------------------------------*/
+  /*---------------------------------------------------------------------------------------------*/
+  /*---------------------------------------------------------------------------------------------*/
+  /*---------------------------------------------------------------------------------------------*/
+  /*---------------------------------------------------------------------------------------------*/
+  std::unique_ptr<std::unique_lock<std::shared_mutex>> write_lock_;
+
+  static auto swap(WritePageGuard& a, WritePageGuard& b) -> void;
 };
 
 }  // namespace bustub
