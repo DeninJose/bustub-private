@@ -267,6 +267,8 @@ auto BufferPoolManager::CheckedWritePage(page_id_t page_id, AccessType access_ty
 *    If no frame can be evicted: return nullopt
    *    If a frame can be evicted:
    */
+  if (page_id == INVALID_PAGE_ID) return std::nullopt;
+
   std::unique_lock bpmLock(*bpm_latch_);
 
   auto iter = page_table_.find(page_id);
@@ -359,6 +361,8 @@ auto BufferPoolManager::CheckedReadPage(page_id_t page_id, AccessType access_typ
    *    If no frame can be evicted: return nullopt
    *    If a frame can be evicted:
    */
+  if (page_id == INVALID_PAGE_ID) return std::nullopt;
+
   std::unique_lock bpmLock(*bpm_latch_);
 
   auto iter = page_table_.find(page_id);
